@@ -16,7 +16,7 @@ resource "aws_s3_bucket" "my_bucket123" {
 resource "aws_s3_bucket_object" "website" {
   bucket       = aws_s3_bucket.my_bucket123.bucket
   key          = "index.html"
-  source       = "C:/Users/vsagiraju/Desktop/cf/index.html"  # Corrected path to use forward slashes
+  source       = "C:\Users\magantha\index.html"  # Corrected path to use forward slashes
   acl          = "private"
   content_type = "text/html"
 }
