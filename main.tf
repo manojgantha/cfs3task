@@ -6,7 +6,7 @@ provider "aws" {
 
 resource "aws_s3_bucket" "my_bucket123" {
   bucket = "sumdists3cf"
-  acl    = "public"
+  acl    = "private"
 
   versioning {
     enabled = true
@@ -17,7 +17,7 @@ resource "aws_s3_bucket_object" "website" {
   bucket = aws_s3_bucket.my_bucket123.bucket
   key    = "index.html"
   source = "C:/Users/vsagiraju/Desktop/cf/index.html"
-  acl    = "public"
+  acl    = "private"
   content_type = "text/html"
 }
 
