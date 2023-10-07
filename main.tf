@@ -1,28 +1,55 @@
-resource "aws_s3_bucket" "my_bucket" {
-  bucket = "manoj53812"  # Replace with your desired bucket name
-  acl    = "private"  # You can adjust the access control here
+provider "aws" {
+  region = "us-east-2"
+  access_key = "AKIATNE64FXHHQVJSZTW"
+  secret_key = "pvHjaguix42MKPLY+p2IQ+/LZWMcYd+EkH5ZsaIr"
+}
+
+resource "aws_s3_bucket" "my_bucket123" {
+  bucket = "sumdists3cf9515"
+  acl    = "private"
 
   versioning {
     enabled = true
   }
 }
 
-# Create an S3 Bucket Object (Upload an Example HTML File)
 resource "aws_s3_bucket_object" "website" {
-  bucket       = aws_s3_bucket.my_bucket.id
-  key          = "index.html"
-  source       = "C:\Users\magantha\index.html"  # Replace with the path to your HTML file
+  bucket = aws_s3_bucket.my_bucket123.bucket
+  key    = "index.html"
+  source = "C:\Users\magantha\index.html"
+  acl    = "private"
   content_type = "text/html"
 }
 
-# Create a CloudFront Distribution
+resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
+  comment = "S3 Origin Identity for my_bucket123"
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.my_bucket123.bucket
+
+  policy = jsonencode({
+    Version   = "2012-10-17",
+    Statement = [
+      {
+        Effect    = "Allow",
+        Principal = {
+          AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.origin_access_identity.id}"
+        },
+        Action   = "s3:GetObject",
+        Resource = "arn:aws:s3:::${aws_s3_bucket.my_bucket123.bucket}/*"
+      }
+    ]
+  })
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.my_bucket.website_endpoint
-    origin_id   = "s3_origin"
+    domain_name = aws_s3_bucket.my_bucket123.bucket_regional_domain_name
+    origin_id   = "myS3Origin"
 
     s3_origin_config {
-      origin_access_identity = ""
+      origin_access_identity = aws_cloudfront_origin_access_identity.origin_access_identity.cloudfront_access_identity_path
     }
   }
 
@@ -31,9 +58,9 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   default_root_object = "index.html"
 
   default_cache_behavior {
-    allowed_methods  = ["GET", "HEAD", "OPTIONS"]
+    allowed_methods  = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods   = ["GET", "HEAD"]
-    target_origin_id = "s3_origin"
+    target_origin_id = "myS3Origin"
 
     forwarded_values {
       query_string = false
@@ -42,7 +69,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
       }
     }
 
-    viewer_protocol_policy = "allow-all"
+    viewer_protocol_policy = "redirect-to-https"
     min_ttl                = 0
     default_ttl            = 3600
     max_ttl                = 86400
@@ -61,9 +88,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
   }
 }
 
-# Outputs
 output "s3_bucket_arn" {
-  value = aws_s3_bucket.my_bucket.arn
+  value = aws_s3_bucket.my_bucket123.arn
 }
 
 output "cloudfront_domain_name" {
