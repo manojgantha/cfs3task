@@ -11,7 +11,7 @@ resource "aws_s3_bucket" "my_bucket" {
 resource "aws_s3_bucket_object" "website" {
   bucket       = aws_s3_bucket.my_bucket.id
   key          = "index.html"
-  source       = "C:\Users\magantha\index.html.txt"  # Replace with the path to your HTML file
+  source       = "C:\Users\magantha\index.html"  # Replace with the path to your HTML file
   content_type = "text/html"
 }
 
