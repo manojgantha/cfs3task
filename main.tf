@@ -4,7 +4,7 @@ provider "aws" {
   secret_key = "pvHjaguix42MKPLY+p2IQ+/LZWMcYd+EkH5ZsaIr"
 }
 
-resource "aws_s3_bucket" "my_bucket" {
+resource "aws_s3_bucket" "my_bucket123" {
   bucket = "sumdists3cf"
   acl    = "public"
 
@@ -14,7 +14,7 @@ resource "aws_s3_bucket" "my_bucket" {
 }
 
 resource "aws_s3_bucket_object" "website" {
-  bucket = aws_s3_bucket.my_bucket.bucket
+  bucket = aws_s3_bucket.my_bucket123.bucket
   key    = "index.html"
   source = "C:/Users/vsagiraju/Desktop/cf/index.html"
   acl    = "public"
@@ -22,11 +22,11 @@ resource "aws_s3_bucket_object" "website" {
 }
 
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = "S3 Origin Identity for my_bucket"
+  comment = "S3 Origin Identity for my_bucket123"
 }
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
-  bucket = aws_s3_bucket.my_bucket.bucket
+  bucket = aws_s3_bucket.my_bucket123.bucket
 
   policy = jsonencode({
     Version   = "2012-10-17",
@@ -37,7 +37,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
           AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.origin_access_identity.id}"
         },
         Action   = "s3:GetObject",
-        Resource = "arn:aws:s3:::${aws_s3_bucket.my_bucket.bucket}/*"
+        Resource = "arn:aws:s3:::${aws_s3_bucket.my_bucket123.bucket}/*"
       }
     ]
   })
@@ -45,7 +45,7 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name = aws_s3_bucket.my_bucket.bucket_regional_domain_name
+    domain_name = aws_s3_bucket.my_bucket123.bucket_regional_domain_name
     origin_id   = "myS3Origin"
 
     s3_origin_config {
@@ -89,7 +89,7 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 }
 
 output "s3_bucket_arn" {
-  value = aws_s3_bucket.my_bucket.arn
+  value = aws_s3_bucket.my_bucket123.arn
 }
 
 output "cloudfront_domain_name" {
