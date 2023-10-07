@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "my_bucket123" {
-  bucket = "sumdists3cf"
+  bucket = "sumdists3cf9515"
   acl    = "private"
 
   versioning {
