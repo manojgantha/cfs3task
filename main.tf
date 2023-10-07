@@ -17,7 +17,7 @@ resource "aws_s3_bucket_object" "website" {
   bucket = aws_s3_bucket.my_bucket.bucket
   key    = "index.html"
   source = "C:/Users/vsagiraju/Desktop/cf/index.html"
-  acl    = "private"
+  acl    = "public"
   content_type = "text/html"
 }
 
